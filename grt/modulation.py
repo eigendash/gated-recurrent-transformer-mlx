@@ -27,16 +27,20 @@ def split_key(key: mx.array, n: int = 2) -> list:
     return [mx.random.split(key, n)[i] for i in range(n)]
 
 
-def sample_state_noise(shape, std: float, key: mx.array) -> mx.array:
-    """Zero-mean Gaussian state noise eps_x of shape ``shape``, scaled by ``std``."""
-    if std == 0.0:
+def sample_state_noise(shape, std: float, key: mx.array | None) -> mx.array:
+    """Zero-mean Gaussian state noise eps_x of shape ``shape``, scaled by ``std``.
+
+    A ``None`` key is not an implicit draw from the global random state: it
+    means "no noise", which is what makes an unkeyed forward deterministic.
+    """
+    if std == 0.0 or key is None:
         return mx.zeros(shape)
     return mx.random.normal(shape, key=key) * std
 
 
-def sample_gate_noise(std: float, key: mx.array, dtype=mx.float32) -> mx.array:
+def sample_gate_noise(std: float, key: mx.array | None, dtype=mx.float32) -> mx.array:
     """The per-scalar gate noise eps_g of Eq. 5, shape ``(1,)``."""
-    if std == 0.0:
+    if std == 0.0 or key is None:
         return mx.zeros((1,), dtype=dtype)
     return mx.random.normal((1,), key=key).astype(dtype) * std
 
