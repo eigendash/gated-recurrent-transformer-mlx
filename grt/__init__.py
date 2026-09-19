@@ -7,6 +7,7 @@ Public API
 ----------
 ``GRTConfig``            configuration dataclass
 ``GRT``                  prelude -> shared core x R (gated) -> coda
+``PlainStack``           the non-recurrent unique-layer baseline
 ``Block``                the pre-norm transformer block both models use
 ``RecurrentProjection``  ``W_proj`` of Eq. 2
 ``ElementwiseGate``      ``f_g`` of Eq. 5
@@ -15,7 +16,7 @@ Public API
 
 from grt.blocks import Block, count_parameters
 from grt.config import GRTConfig
-from grt.model import GRT
+from grt.model import GRT, PlainStack
 from grt.modulation import ElementwiseGate, RecurrentProjection, gated_update
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     "ElementwiseGate",
     "GRT",
     "GRTConfig",
+    "PlainStack",
     "RecurrentProjection",
     "count_parameters",
     "gated_update",

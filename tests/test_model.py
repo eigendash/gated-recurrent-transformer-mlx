@@ -6,7 +6,7 @@ import pytest
 
 from grt.blocks import count_parameters
 from grt.config import GRTConfig
-from grt.model import GRT
+from grt.model import GRT, PlainStack
 
 
 def tiny_config(**kwargs) -> GRTConfig:
@@ -129,3 +129,86 @@ def test_zero_block_counts_are_allowed_where_sensible():
     assert model(tokens, R=2).shape == (1, 4, 32)
     with pytest.raises(ValueError):
         GRT(tiny_config(n_prelude=0, n_core=0, n_coda=0))
+
+
+# --------------------------------------------------------------------------- #
+# The non-recurrent baseline
+# --------------------------------------------------------------------------- #
+
+
+def test_plain_stack_parameter_count_formula():
+    dim = 16
+    cfg = tiny_config(mlp_ratio=2)
+    for n_layers in (1, 3, 8):
+        model = PlainStack(cfg, n_layers=n_layers)
+        p_block = (4 + 2 * cfg.mlp_ratio) * dim * dim + (9 + cfg.mlp_ratio) * dim
+        expected = (
+            n_layers * p_block
+            + cfg.vocab_size * dim
+            + cfg.max_seq_len * dim
+            + cfg.vocab_size * dim
+            + 2 * dim
+        )
+        assert model.parameter_count() == expected
+        assert model.unique_blocks == n_layers
+
+
+def test_plain_stack_visits_every_block_once_whatever_R_is():
+    mx.random.seed(6)
+    model = PlainStack(tiny_config(), n_layers=4)
+    tokens = mx.random.randint(0, 32, (1, 5))
+    assert model.layer_applications() == 4
+    assert model.layer_applications(99) == 4
+    assert model(tokens, R=7).shape == (1, 5, 32)
+
+
+def test_plain_stack_needs_a_depth():
+    with pytest.raises(ValueError):
+        PlainStack(tiny_config(), n_layers=0)
+    with pytest.raises(ValueError):
+        PlainStack(tiny_config())
+
+
+def test_r1_unmodulated_grt_is_bit_identical_to_the_plain_stack():
+    """The clean limit: one recurrence with the modulation ablated.
+
+    With ``use_projection=False`` and ``use_gate=False`` the update of Eq. 4
+    collapses to ``h <- B_shared(h)``, so R = 1 must reproduce the non-recurrent
+    prelude + core + coda stack exactly, not approximately.
+    """
+    mx.random.seed(7)
+    cfg = tiny_config(n_prelude=1, n_core=1, n_coda=1)
+    grt = GRT(cfg)
+    ablated = GRT(
+        tiny_config(n_prelude=1, n_core=1, n_coda=1, use_projection=False, use_gate=False)
+    )
+    ablated.update(grt.parameters())
+    plain = PlainStack.from_grt(grt)
+
+    tokens = mx.random.randint(0, 32, (2, 7))
+    assert mx.array_equal(ablated(tokens, R=1), plain(tokens))
+    # Same again through the gate limits: a constant gate of 0 also writes the
+    # core output through unchanged.
+    forced = GRT(tiny_config(n_prelude=1, n_core=1, n_coda=1, use_projection=False))
+    forced.update(grt.parameters())
+    assert mx.array_equal(forced(tokens, R=1, gate_override=0.0), plain(tokens))
+
+
+def test_plain_stack_from_grt_shares_the_same_blocks():
+    mx.random.seed(8)
+    grt = GRT(tiny_config(n_prelude=1, n_core=2, n_coda=1))
+    plain = PlainStack.from_grt(grt)
+    assert plain.n_layers == 4 == grt.unique_blocks
+    assert plain.blocks[0] is grt.prelude[0]
+    assert plain.blocks[1] is grt.core[0]
+    assert plain.blocks[3] is grt.coda[0]
+    assert plain.embed is grt.embed and plain.lm_head is grt.lm_head
+
+
+def test_isoflops_plain_stack_has_the_same_block_application_count():
+    mx.random.seed(9)
+    cfg = tiny_config(n_prelude=1, n_core=2, n_coda=1)
+    grt = GRT(cfg)
+    for R in (1, 2, 5):
+        baseline = PlainStack(cfg, n_layers=grt.layer_applications(R))
+        assert baseline.layer_applications(R) == grt.layer_applications(R)

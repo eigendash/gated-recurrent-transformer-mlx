@@ -182,4 +182,88 @@ class GRT(nn.Module):
         return logits, trace
 
 
-__all__ = ["GRT", "sample_gate_noise"]
+class PlainStack(nn.Module):
+    """The non-recurrent baseline: ``L`` unique blocks, each applied exactly once.
+
+    Same block class, same prelude/core/coda ordering, same embeddings and
+    head as :class:`GRT` -- the only difference is that every block owns its
+    weights and is visited once. This is the model the GRT is compared against
+    under isoFLOPs (``L = n_pre + n_core * R + n_coda``) and isoParams
+    (``L = n_pre + n_core + n_coda``).
+
+    Two ways to build one:
+
+    * ``PlainStack(config, n_layers=L)`` builds ``L`` fresh blocks, used for the
+      experiment baselines.
+    * ``PlainStack.from_grt(grt)`` reuses a GRT's own embeddings, head and
+      ``prelude + core + coda`` blocks, which makes the R = 1 clean-limit
+      comparison bit-exact.
+    """
+
+    def __init__(
+        self,
+        config: GRTConfig,
+        n_layers: int | None = None,
+        block_factory=None,
+        blocks=None,
+        share=None,
+    ):
+        super().__init__()
+        self.config = config
+        dim, heads, ratio = config.dim, config.n_heads, config.mlp_ratio
+        factory = block_factory if block_factory is not None else default_block_factory
+
+        if blocks is not None:
+            self.blocks = list(blocks)
+            if n_layers is not None and n_layers != len(self.blocks):
+                raise ValueError("n_layers disagrees with the supplied blocks")
+        else:
+            if n_layers is None or n_layers < 1:
+                raise ValueError("provide n_layers >= 1 or an explicit block list")
+            self.blocks = [factory(dim, heads, ratio) for _ in range(n_layers)]
+
+        if share is not None:
+            self.embed = share.embed
+            self.pos = share.pos
+            self.ln_f = share.ln_f
+            self.lm_head = share.lm_head
+        else:
+            self.embed = nn.Embedding(config.vocab_size, dim)
+            self.pos = nn.Embedding(config.max_seq_len, dim)
+            self.ln_f = nn.LayerNorm(dim)
+            self.lm_head = nn.Linear(dim, config.vocab_size, bias=False)
+
+    @classmethod
+    def from_grt(cls, grt: GRT) -> "PlainStack":
+        """Build a plain stack that shares a GRT's embeddings, head and blocks."""
+        blocks = list(grt.prelude) + list(grt.core) + list(grt.coda)
+        return cls(grt.config, blocks=blocks, share=grt)
+
+    @property
+    def n_layers(self) -> int:
+        return len(self.blocks)
+
+    @property
+    def unique_blocks(self) -> int:
+        return self.n_layers
+
+    def layer_applications(self, R: int | None = None) -> int:
+        """A plain stack visits every block once; ``R`` does not exist here."""
+        return self.n_layers
+
+    def parameter_count(self) -> int:
+        return count_parameters(self)
+
+    def __call__(self, tokens: mx.array, R: int | None = None) -> mx.array:
+        seq_len = tokens.shape[1]
+        if seq_len > self.config.max_seq_len:
+            raise ValueError(
+                f"sequence length {seq_len} exceeds max_seq_len {self.config.max_seq_len}"
+            )
+        mask = causal_mask(seq_len)
+        h = self.embed(tokens) + self.pos(mx.arange(seq_len))
+        h = GRT._run_blocks(h, self.blocks, mask)
+        return self.lm_head(self.ln_f(h))
+
+
+__all__ = ["GRT", "PlainStack", "sample_gate_noise"]
