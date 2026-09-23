@@ -254,7 +254,13 @@ class PlainStack(nn.Module):
     def parameter_count(self) -> int:
         return count_parameters(self)
 
-    def __call__(self, tokens: mx.array, R: int | None = None) -> mx.array:
+    def __call__(self, tokens: mx.array, R: int | None = None, key=None) -> mx.array:
+        """Run the stack. ``R`` and ``key`` are accepted and ignored.
+
+        They are part of the interface so that a baseline can be dropped into
+        the same training and evaluation code as a :class:`GRT`; a plain stack
+        has no recurrence to configure and no noise to inject.
+        """
         seq_len = tokens.shape[1]
         if seq_len > self.config.max_seq_len:
             raise ValueError(
