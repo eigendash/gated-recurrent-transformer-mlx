@@ -1,0 +1,1167 @@
+{
+  "paper": {
+    "title": "Gated Recurrent Transformers: Expressive Depth through Recurrent Modulation",
+    "arxiv": "arXiv:2608.15062",
+    "authors": "Amr Hegazy, Amr Alanwar, Mostafa Elhoushi"
+  },
+  "script": "scripts/train_recall.py",
+  "disclaimer": "Toy-scale independent implementation. Numbers are not comparable to the paper's GPT-2-scale results.",
+  "task": {
+    "name": "multi-query associative recall",
+    "n_pairs": 8,
+    "n_keys": 16,
+    "seq_len": 24,
+    "vocab_size": 32,
+    "batch_size": 64,
+    "chance_accuracy": 0.03125
+  },
+  "model": {
+    "dim": 64,
+    "n_heads": 4,
+    "mlp_ratio": 4,
+    "n_prelude": 1,
+    "n_coda": 1
+  },
+  "training": {
+    "steps": 2000,
+    "peak_lr": 0.003,
+    "warmup": 100,
+    "weight_decay": 0.01,
+    "grad_clip": 1.0,
+    "seed": 0,
+    "depth_sampling": false,
+    "state_noise_std": 0.1,
+    "gate_noise_std": 0.1
+  },
+  "evaluation": {
+    "batches": 16,
+    "noise": "off",
+    "shifted_pairs": 12,
+    "shifted_seq_len": 36
+  },
+  "runs": [
+    {
+      "tag": "grt-c1-R1",
+      "solved_at_step": 750,
+      "applications_to_solve": 2250,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8169236183166504,
+          "accuracy": 0.26025390625
+        },
+        {
+          "step": 500,
+          "loss": 1.8025488257408142,
+          "accuracy": 0.26318359375
+        },
+        {
+          "step": 750,
+          "loss": 0.015228195872623473,
+          "accuracy": 0.99658203125
+        },
+        {
+          "step": 1000,
+          "loss": 0.0014397149061551318,
+          "accuracy": 0.99951171875
+        },
+        {
+          "step": 1250,
+          "loss": 9.794790639716666e-05,
+          "accuracy": 1.0
+        },
+        {
+          "step": 1500,
+          "loss": 8.095264638541266e-05,
+          "accuracy": 1.0
+        },
+        {
+          "step": 1750,
+          "loss": 7.229888797155581e-05,
+          "accuracy": 1.0
+        },
+        {
+          "step": 2000,
+          "loss": 6.780940020689741e-05,
+          "accuracy": 1.0
+        }
+      ],
+      "kind": "grt",
+      "R": 1,
+      "unique_blocks": 3,
+      "parameters": 177344,
+      "layer_applications": 3,
+      "held_out_loss": 6.681332956759434e-05,
+      "held_out_accuracy": 1.0,
+      "shifted_loss": 4.893328845500946,
+      "shifted_accuracy": 0.5694986991584301,
+      "train_loss_final": 6.508368096547201e-05,
+      "wall_time_s": 53.81629180908203,
+      "core_depth": 1,
+      "measured_block_applications": 3
+    },
+    {
+      "tag": "grt-c1-R2",
+      "solved_at_step": 1000,
+      "applications_to_solve": 4000,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.814125895500183,
+          "accuracy": 0.25927734375
+        },
+        {
+          "step": 500,
+          "loss": 1.8012434244155884,
+          "accuracy": 0.25927734375
+        },
+        {
+          "step": 750,
+          "loss": 0.20460153743624687,
+          "accuracy": 0.92333984375
+        },
+        {
+          "step": 1000,
+          "loss": 0.0015562972548650578,
+          "accuracy": 0.99951171875
+        },
+        {
+          "step": 1250,
+          "loss": 0.00011479420027171727,
+          "accuracy": 1.0
+        },
+        {
+          "step": 1500,
+          "loss": 7.292490045074373e-05,
+          "accuracy": 1.0
+        },
+        {
+          "step": 1750,
+          "loss": 6.466708146035671e-05,
+          "accuracy": 1.0
+        },
+        {
+          "step": 2000,
+          "loss": 6.0473234043456614e-05,
+          "accuracy": 1.0
+        }
+      ],
+      "kind": "grt",
+      "R": 2,
+      "unique_blocks": 3,
+      "parameters": 177344,
+      "layer_applications": 4,
+      "held_out_loss": 6.346766031128936e-05,
+      "held_out_accuracy": 1.0,
+      "shifted_loss": 4.367106348276138,
+      "shifted_accuracy": 0.619384765625,
+      "train_loss_final": 6.062581087462604e-05,
+      "wall_time_s": 66.85729098320007,
+      "core_depth": 1,
+      "measured_block_applications": 4
+    },
+    {
+      "tag": "grt-c1-R4",
+      "solved_at_step": 1250,
+      "applications_to_solve": 7500,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8168211877346039,
+          "accuracy": 0.25537109375
+        },
+        {
+          "step": 500,
+          "loss": 1.80125293135643,
+          "accuracy": 0.259765625
+        },
+        {
+          "step": 750,
+          "loss": 1.79703027009964,
+          "accuracy": 0.26123046875
+        },
+        {
+          "step": 1000,
+          "loss": 0.07714560441672802,
+          "accuracy": 0.978515625
+        },
+        {
+          "step": 1250,
+          "loss": 0.002673288428923115,
+          "accuracy": 0.99951171875
+        },
+        {
+          "step": 1500,
+          "loss": 0.00012945518938067835,
+          "accuracy": 1.0
+        },
+        {
+          "step": 1750,
+          "loss": 0.00010174807175644673,
+          "accuracy": 1.0
+        },
+        {
+          "step": 2000,
+          "loss": 9.085483179660514e-05,
+          "accuracy": 1.0
+        }
+      ],
+      "kind": "grt",
+      "R": 4,
+      "unique_blocks": 3,
+      "parameters": 177344,
+      "layer_applications": 6,
+      "held_out_loss": 9.05631741261459e-05,
+      "held_out_accuracy": 1.0,
+      "shifted_loss": 5.157429665327072,
+      "shifted_accuracy": 0.531494140625,
+      "train_loss_final": 8.175428956747055e-05,
+      "wall_time_s": 90.52154898643494,
+      "core_depth": 1,
+      "measured_block_applications": 6
+    },
+    {
+      "tag": "grt-c1-R6",
+      "solved_at_step": 1000,
+      "applications_to_solve": 8000,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8174585103988647,
+          "accuracy": 0.24951171875
+        },
+        {
+          "step": 500,
+          "loss": 1.8009550869464874,
+          "accuracy": 0.2587890625
+        },
+        {
+          "step": 750,
+          "loss": 1.7632275521755219,
+          "accuracy": 0.2900390625
+        },
+        {
+          "step": 1000,
+          "loss": 0.03179995436221361,
+          "accuracy": 0.990234375
+        },
+        {
+          "step": 1250,
+          "loss": 0.0004916870602755807,
+          "accuracy": 1.0
+        },
+        {
+          "step": 1500,
+          "loss": 7.837393604859244e-05,
+          "accuracy": 1.0
+        },
+        {
+          "step": 1750,
+          "loss": 6.793747888877988e-05,
+          "accuracy": 1.0
+        },
+        {
+          "step": 2000,
+          "loss": 6.304548514890485e-05,
+          "accuracy": 1.0
+        }
+      ],
+      "kind": "grt",
+      "R": 6,
+      "unique_blocks": 3,
+      "parameters": 177344,
+      "layer_applications": 8,
+      "held_out_loss": 6.172295979922637e-05,
+      "held_out_accuracy": 1.0,
+      "shifted_loss": 5.13883450627327,
+      "shifted_accuracy": 0.5538737028837204,
+      "train_loss_final": 6.984148058108985e-05,
+      "wall_time_s": 112.78786516189575,
+      "core_depth": 1,
+      "measured_block_applications": 8
+    },
+    {
+      "tag": "grt-c2-R1",
+      "solved_at_step": 1500,
+      "applications_to_solve": 6000,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.818148910999298,
+          "accuracy": 0.2548828125
+        },
+        {
+          "step": 500,
+          "loss": 1.803164690732956,
+          "accuracy": 0.259765625
+        },
+        {
+          "step": 750,
+          "loss": 1.8007500767707825,
+          "accuracy": 0.2568359375
+        },
+        {
+          "step": 1000,
+          "loss": 1.7944282293319702,
+          "accuracy": 0.25732421875
+        },
+        {
+          "step": 1250,
+          "loss": 0.06312460917979479,
+          "accuracy": 0.98095703125
+        },
+        {
+          "step": 1500,
+          "loss": 0.00021128249136381783,
+          "accuracy": 1.0
+        },
+        {
+          "step": 1750,
+          "loss": 0.00013534523532143794,
+          "accuracy": 1.0
+        },
+        {
+          "step": 2000,
+          "loss": 0.00011716540029738098,
+          "accuracy": 1.0
+        }
+      ],
+      "kind": "grt",
+      "R": 1,
+      "unique_blocks": 4,
+      "parameters": 227328,
+      "layer_applications": 4,
+      "held_out_loss": 0.00011540401510501397,
+      "held_out_accuracy": 1.0,
+      "shifted_loss": 5.777205437421799,
+      "shifted_accuracy": 0.46590169332921505,
+      "train_loss_final": 0.00013089981803204864,
+      "wall_time_s": 50.970187187194824,
+      "core_depth": 2,
+      "measured_block_applications": 4
+    },
+    {
+      "tag": "grt-c2-R2",
+      "solved_at_step": null,
+      "applications_to_solve": null,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8164936006069183,
+          "accuracy": 0.2578125
+        },
+        {
+          "step": 500,
+          "loss": 1.8018699884414673,
+          "accuracy": 0.2568359375
+        },
+        {
+          "step": 750,
+          "loss": 1.800814837217331,
+          "accuracy": 0.25439453125
+        },
+        {
+          "step": 1000,
+          "loss": 1.7982266247272491,
+          "accuracy": 0.2548828125
+        },
+        {
+          "step": 1250,
+          "loss": 1.7954947650432587,
+          "accuracy": 0.2578125
+        },
+        {
+          "step": 1500,
+          "loss": 1.7946328222751617,
+          "accuracy": 0.25732421875
+        },
+        {
+          "step": 1750,
+          "loss": 1.7945749759674072,
+          "accuracy": 0.26171875
+        },
+        {
+          "step": 2000,
+          "loss": 1.7944216430187225,
+          "accuracy": 0.26171875
+        }
+      ],
+      "kind": "grt",
+      "R": 2,
+      "unique_blocks": 4,
+      "parameters": 227328,
+      "layer_applications": 6,
+      "held_out_loss": 1.7955396175384521,
+      "held_out_accuracy": 0.259521484375,
+      "shifted_loss": 3.0326149463653564,
+      "shifted_accuracy": 0.19384765718132257,
+      "train_loss_final": 1.8009977340698242,
+      "wall_time_s": 58.10894322395325,
+      "core_depth": 2,
+      "measured_block_applications": 6
+    },
+    {
+      "tag": "grt-c2-R4",
+      "solved_at_step": null,
+      "applications_to_solve": null,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.816131204366684,
+          "accuracy": 0.25341796875
+        },
+        {
+          "step": 500,
+          "loss": 1.8025490939617157,
+          "accuracy": 0.25830078125
+        },
+        {
+          "step": 750,
+          "loss": 1.7997559905052185,
+          "accuracy": 0.265625
+        },
+        {
+          "step": 1000,
+          "loss": 1.7981613278388977,
+          "accuracy": 0.25634765625
+        },
+        {
+          "step": 1250,
+          "loss": 1.7952546179294586,
+          "accuracy": 0.25927734375
+        },
+        {
+          "step": 1500,
+          "loss": 1.7946219444274902,
+          "accuracy": 0.25634765625
+        },
+        {
+          "step": 1750,
+          "loss": 1.7946777641773224,
+          "accuracy": 0.26025390625
+        },
+        {
+          "step": 2000,
+          "loss": 1.79457226395607,
+          "accuracy": 0.25927734375
+        }
+      ],
+      "kind": "grt",
+      "R": 4,
+      "unique_blocks": 4,
+      "parameters": 227328,
+      "layer_applications": 10,
+      "held_out_loss": 1.7955149412155151,
+      "held_out_accuracy": 0.2581787109375,
+      "shifted_loss": 3.04343019425869,
+      "shifted_accuracy": 0.19368489552289248,
+      "train_loss_final": 1.8008265495300293,
+      "wall_time_s": 101.66135907173157,
+      "core_depth": 2,
+      "measured_block_applications": 10
+    },
+    {
+      "tag": "grt-c2-R6",
+      "solved_at_step": 1250,
+      "applications_to_solve": 17500,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8162903189659119,
+          "accuracy": 0.25732421875
+        },
+        {
+          "step": 500,
+          "loss": 1.8023367822170258,
+          "accuracy": 0.25341796875
+        },
+        {
+          "step": 750,
+          "loss": 1.7996757328510284,
+          "accuracy": 0.2578125
+        },
+        {
+          "step": 1000,
+          "loss": 1.7970453202724457,
+          "accuracy": 0.26416015625
+        },
+        {
+          "step": 1250,
+          "loss": 0.019069668371230364,
+          "accuracy": 0.99560546875
+        },
+        {
+          "step": 1500,
+          "loss": 0.00023906847491161898,
+          "accuracy": 1.0
+        },
+        {
+          "step": 1750,
+          "loss": 0.00015045098552946,
+          "accuracy": 1.0
+        },
+        {
+          "step": 2000,
+          "loss": 0.00013299330021254718,
+          "accuracy": 1.0
+        }
+      ],
+      "kind": "grt",
+      "R": 6,
+      "unique_blocks": 4,
+      "parameters": 227328,
+      "layer_applications": 14,
+      "held_out_loss": 0.00013517189154299558,
+      "held_out_accuracy": 1.0,
+      "shifted_loss": 4.6399416625499725,
+      "shifted_accuracy": 0.56884765625,
+      "train_loss_final": 0.00014276831643655896,
+      "wall_time_s": 105.23762273788452,
+      "core_depth": 2,
+      "measured_block_applications": 14
+    },
+    {
+      "tag": "plain-3L",
+      "solved_at_step": null,
+      "applications_to_solve": null,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8143438398838043,
+          "accuracy": 0.251953125
+        },
+        {
+          "step": 500,
+          "loss": 1.8018894791603088,
+          "accuracy": 0.24951171875
+        },
+        {
+          "step": 750,
+          "loss": 1.8003752827644348,
+          "accuracy": 0.25390625
+        },
+        {
+          "step": 1000,
+          "loss": 1.7983224391937256,
+          "accuracy": 0.2587890625
+        },
+        {
+          "step": 1250,
+          "loss": 1.7956034243106842,
+          "accuracy": 0.26025390625
+        },
+        {
+          "step": 1500,
+          "loss": 1.794824481010437,
+          "accuracy": 0.25927734375
+        },
+        {
+          "step": 1750,
+          "loss": 1.7948989868164062,
+          "accuracy": 0.2587890625
+        },
+        {
+          "step": 2000,
+          "loss": 1.7949728667736053,
+          "accuracy": 0.25830078125
+        }
+      ],
+      "kind": "plain",
+      "R": 3,
+      "unique_blocks": 3,
+      "parameters": 156480,
+      "layer_applications": 3,
+      "held_out_loss": 1.7956336736679077,
+      "held_out_accuracy": 0.2578125,
+      "shifted_loss": 3.1108787208795547,
+      "shifted_accuracy": 0.1885579414665699,
+      "train_loss_final": 1.8003329038619995,
+      "wall_time_s": 14.236235857009888,
+      "measured_block_applications": 3
+    },
+    {
+      "tag": "plain-4L",
+      "solved_at_step": null,
+      "applications_to_solve": null,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.815678745508194,
+          "accuracy": 0.25537109375
+        },
+        {
+          "step": 500,
+          "loss": 1.801719605922699,
+          "accuracy": 0.255859375
+        },
+        {
+          "step": 750,
+          "loss": 1.799412727355957,
+          "accuracy": 0.2587890625
+        },
+        {
+          "step": 1000,
+          "loss": 1.7974145710468292,
+          "accuracy": 0.25244140625
+        },
+        {
+          "step": 1250,
+          "loss": 1.7949551343917847,
+          "accuracy": 0.263671875
+        },
+        {
+          "step": 1500,
+          "loss": 1.7942501604557037,
+          "accuracy": 0.26318359375
+        },
+        {
+          "step": 1750,
+          "loss": 1.7933833301067352,
+          "accuracy": 0.26171875
+        },
+        {
+          "step": 2000,
+          "loss": 1.6408571302890778,
+          "accuracy": 0.34521484375
+        }
+      ],
+      "kind": "plain",
+      "R": 4,
+      "unique_blocks": 4,
+      "parameters": 206464,
+      "layer_applications": 4,
+      "held_out_loss": 1.6380478590726852,
+      "held_out_accuracy": 0.3428955078125,
+      "shifted_loss": 3.0671239346265793,
+      "shifted_accuracy": 0.24080403707921505,
+      "train_loss_final": 1.652589201927185,
+      "wall_time_s": 18.391506910324097,
+      "measured_block_applications": 4
+    },
+    {
+      "tag": "plain-6L",
+      "solved_at_step": null,
+      "applications_to_solve": null,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8294190168380737,
+          "accuracy": 0.2548828125
+        },
+        {
+          "step": 500,
+          "loss": 1.8083883225917816,
+          "accuracy": 0.25244140625
+        },
+        {
+          "step": 750,
+          "loss": 1.8018517792224884,
+          "accuracy": 0.25830078125
+        },
+        {
+          "step": 1000,
+          "loss": 1.7990087866783142,
+          "accuracy": 0.2568359375
+        },
+        {
+          "step": 1250,
+          "loss": 1.7971750795841217,
+          "accuracy": 0.25244140625
+        },
+        {
+          "step": 1500,
+          "loss": 1.7959730923175812,
+          "accuracy": 0.25634765625
+        },
+        {
+          "step": 1750,
+          "loss": 1.7954935133457184,
+          "accuracy": 0.26025390625
+        },
+        {
+          "step": 2000,
+          "loss": 1.7952190339565277,
+          "accuracy": 0.259765625
+        }
+      ],
+      "kind": "plain",
+      "R": 6,
+      "unique_blocks": 6,
+      "parameters": 306432,
+      "layer_applications": 6,
+      "held_out_loss": 1.795729748904705,
+      "held_out_accuracy": 0.2640380859375,
+      "shifted_loss": 3.111318916082382,
+      "shifted_accuracy": 0.18969726469367743,
+      "train_loss_final": 1.8022953271865845,
+      "wall_time_s": 24.37014079093933,
+      "measured_block_applications": 6
+    },
+    {
+      "tag": "plain-8L",
+      "solved_at_step": null,
+      "applications_to_solve": null,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8289124369621277,
+          "accuracy": 0.24658203125
+        },
+        {
+          "step": 500,
+          "loss": 1.8065513968467712,
+          "accuracy": 0.25634765625
+        },
+        {
+          "step": 750,
+          "loss": 1.8018493056297302,
+          "accuracy": 0.25537109375
+        },
+        {
+          "step": 1000,
+          "loss": 1.799007922410965,
+          "accuracy": 0.25537109375
+        },
+        {
+          "step": 1250,
+          "loss": 1.7970316112041473,
+          "accuracy": 0.259765625
+        },
+        {
+          "step": 1500,
+          "loss": 1.7960359454154968,
+          "accuracy": 0.26123046875
+        },
+        {
+          "step": 1750,
+          "loss": 1.7953993082046509,
+          "accuracy": 0.2548828125
+        },
+        {
+          "step": 2000,
+          "loss": 1.7952151894569397,
+          "accuracy": 0.25439453125
+        }
+      ],
+      "kind": "plain",
+      "R": 8,
+      "unique_blocks": 8,
+      "parameters": 406400,
+      "layer_applications": 8,
+      "held_out_loss": 1.7960440069437027,
+      "held_out_accuracy": 0.2618408203125,
+      "shifted_loss": 3.1401927918195724,
+      "shifted_accuracy": 0.188232421875,
+      "train_loss_final": 1.7997465133666992,
+      "wall_time_s": 30.277209043502808,
+      "measured_block_applications": 8
+    },
+    {
+      "tag": "plain-10L",
+      "solved_at_step": null,
+      "applications_to_solve": null,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8262251317501068,
+          "accuracy": 0.24755859375
+        },
+        {
+          "step": 500,
+          "loss": 1.8037609159946442,
+          "accuracy": 0.259765625
+        },
+        {
+          "step": 750,
+          "loss": 1.8012964725494385,
+          "accuracy": 0.25732421875
+        },
+        {
+          "step": 1000,
+          "loss": 1.798368513584137,
+          "accuracy": 0.2548828125
+        },
+        {
+          "step": 1250,
+          "loss": 1.7950321435928345,
+          "accuracy": 0.2607421875
+        },
+        {
+          "step": 1500,
+          "loss": 1.795650064945221,
+          "accuracy": 0.2587890625
+        },
+        {
+          "step": 1750,
+          "loss": 1.794596552848816,
+          "accuracy": 0.2705078125
+        },
+        {
+          "step": 2000,
+          "loss": 1.7948192059993744,
+          "accuracy": 0.267578125
+        }
+      ],
+      "kind": "plain",
+      "R": 10,
+      "unique_blocks": 10,
+      "parameters": 506368,
+      "layer_applications": 10,
+      "held_out_loss": 1.7962354347109795,
+      "held_out_accuracy": 0.260009765625,
+      "shifted_loss": 3.1182642430067062,
+      "shifted_accuracy": 0.19051106739789248,
+      "train_loss_final": 1.8011491298675537,
+      "wall_time_s": 37.81737494468689,
+      "measured_block_applications": 10
+    },
+    {
+      "tag": "plain-14L",
+      "solved_at_step": null,
+      "applications_to_solve": null,
+      "eval_curve": [
+        {
+          "step": 250,
+          "loss": 1.8389776349067688,
+          "accuracy": 0.2431640625
+        },
+        {
+          "step": 500,
+          "loss": 1.808707445859909,
+          "accuracy": 0.25537109375
+        },
+        {
+          "step": 750,
+          "loss": 1.8024109601974487,
+          "accuracy": 0.26220703125
+        },
+        {
+          "step": 1000,
+          "loss": 1.8006722629070282,
+          "accuracy": 0.26123046875
+        },
+        {
+          "step": 1250,
+          "loss": 1.795394629240036,
+          "accuracy": 0.26171875
+        },
+        {
+          "step": 1500,
+          "loss": 1.7952874898910522,
+          "accuracy": 0.2626953125
+        },
+        {
+          "step": 1750,
+          "loss": 1.7946757376194,
+          "accuracy": 0.25537109375
+        },
+        {
+          "step": 2000,
+          "loss": 1.7945325076580048,
+          "accuracy": 0.26220703125
+        }
+      ],
+      "kind": "plain",
+      "R": 14,
+      "unique_blocks": 14,
+      "parameters": 706304,
+      "layer_applications": 14,
+      "held_out_loss": 1.796220824122429,
+      "held_out_accuracy": 0.2613525390625,
+      "shifted_loss": 3.101534515619278,
+      "shifted_accuracy": 0.192138671875,
+      "train_loss_final": 1.8031339645385742,
+      "wall_time_s": 53.01606512069702,
+      "measured_block_applications": 14
+    }
+  ],
+  "isoflops": [
+    {
+      "regime": "isoFLOPs",
+      "grt": "grt-c1-R1",
+      "plain": "plain-3L",
+      "note": "same block applications, different unique parameter count",
+      "layer_applications_grt": 3,
+      "layer_applications_plain": 3,
+      "parameters_grt": 177344,
+      "parameters_plain": 156480,
+      "parameter_ratio_plain_over_grt": 0.8823529411764706,
+      "loss_grt": 6.681332956759434e-05,
+      "loss_plain": 1.7956336736679077,
+      "loss_delta": -1.7955668603383401,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.2578125
+    },
+    {
+      "regime": "isoFLOPs",
+      "grt": "grt-c1-R2",
+      "plain": "plain-4L",
+      "note": "same block applications, different unique parameter count",
+      "layer_applications_grt": 4,
+      "layer_applications_plain": 4,
+      "parameters_grt": 177344,
+      "parameters_plain": 206464,
+      "parameter_ratio_plain_over_grt": 1.1642006495849875,
+      "loss_grt": 6.346766031128936e-05,
+      "loss_plain": 1.6380478590726852,
+      "loss_delta": -1.637984391412374,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.3428955078125
+    },
+    {
+      "regime": "isoFLOPs",
+      "grt": "grt-c1-R4",
+      "plain": "plain-6L",
+      "note": "same block applications, different unique parameter count",
+      "layer_applications_grt": 6,
+      "layer_applications_plain": 6,
+      "parameters_grt": 177344,
+      "parameters_plain": 306432,
+      "parameter_ratio_plain_over_grt": 1.7278960664020209,
+      "loss_grt": 9.05631741261459e-05,
+      "loss_plain": 1.795729748904705,
+      "loss_delta": -1.795639185730579,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.2640380859375
+    },
+    {
+      "regime": "isoFLOPs",
+      "grt": "grt-c1-R6",
+      "plain": "plain-8L",
+      "note": "same block applications, different unique parameter count",
+      "layer_applications_grt": 8,
+      "layer_applications_plain": 8,
+      "parameters_grt": 177344,
+      "parameters_plain": 406400,
+      "parameter_ratio_plain_over_grt": 2.2915914832190545,
+      "loss_grt": 6.172295979922637e-05,
+      "loss_plain": 1.7960440069437027,
+      "loss_delta": -1.7959822839839035,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.2618408203125
+    },
+    {
+      "regime": "isoFLOPs",
+      "grt": "grt-c2-R1",
+      "plain": "plain-4L",
+      "note": "same block applications, different unique parameter count",
+      "layer_applications_grt": 4,
+      "layer_applications_plain": 4,
+      "parameters_grt": 227328,
+      "parameters_plain": 206464,
+      "parameter_ratio_plain_over_grt": 0.9082207207207207,
+      "loss_grt": 0.00011540401510501397,
+      "loss_plain": 1.6380478590726852,
+      "loss_delta": -1.6379324550575802,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.3428955078125
+    },
+    {
+      "regime": "isoFLOPs",
+      "grt": "grt-c2-R2",
+      "plain": "plain-6L",
+      "note": "same block applications, different unique parameter count",
+      "layer_applications_grt": 6,
+      "layer_applications_plain": 6,
+      "parameters_grt": 227328,
+      "parameters_plain": 306432,
+      "parameter_ratio_plain_over_grt": 1.347972972972973,
+      "loss_grt": 1.7955396175384521,
+      "loss_plain": 1.795729748904705,
+      "loss_delta": -0.00019013136625289917,
+      "accuracy_grt": 0.259521484375,
+      "accuracy_plain": 0.2640380859375
+    },
+    {
+      "regime": "isoFLOPs",
+      "grt": "grt-c2-R4",
+      "plain": "plain-10L",
+      "note": "same block applications, different unique parameter count",
+      "layer_applications_grt": 10,
+      "layer_applications_plain": 10,
+      "parameters_grt": 227328,
+      "parameters_plain": 506368,
+      "parameter_ratio_plain_over_grt": 2.2274774774774775,
+      "loss_grt": 1.7955149412155151,
+      "loss_plain": 1.7962354347109795,
+      "loss_delta": -0.000720493495464325,
+      "accuracy_grt": 0.2581787109375,
+      "accuracy_plain": 0.260009765625
+    },
+    {
+      "regime": "isoFLOPs",
+      "grt": "grt-c2-R6",
+      "plain": "plain-14L",
+      "note": "same block applications, different unique parameter count",
+      "layer_applications_grt": 14,
+      "layer_applications_plain": 14,
+      "parameters_grt": 227328,
+      "parameters_plain": 706304,
+      "parameter_ratio_plain_over_grt": 3.106981981981982,
+      "loss_grt": 0.00013517189154299558,
+      "loss_plain": 1.796220824122429,
+      "loss_delta": -1.796085652230886,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.2613525390625
+    }
+  ],
+  "isoparams": [
+    {
+      "regime": "isoParams",
+      "grt": "grt-c1-R1",
+      "plain": "plain-3L",
+      "note": "same unique block count; the GRT applies its core R times",
+      "layer_applications_grt": 3,
+      "layer_applications_plain": 3,
+      "parameters_grt": 177344,
+      "parameters_plain": 156480,
+      "parameter_ratio_plain_over_grt": 0.8823529411764706,
+      "loss_grt": 6.681332956759434e-05,
+      "loss_plain": 1.7956336736679077,
+      "loss_delta": -1.7955668603383401,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.2578125,
+      "R": 1,
+      "core_depth": 1
+    },
+    {
+      "regime": "isoParams",
+      "grt": "grt-c1-R2",
+      "plain": "plain-3L",
+      "note": "same unique block count; the GRT applies its core R times",
+      "layer_applications_grt": 4,
+      "layer_applications_plain": 3,
+      "parameters_grt": 177344,
+      "parameters_plain": 156480,
+      "parameter_ratio_plain_over_grt": 0.8823529411764706,
+      "loss_grt": 6.346766031128936e-05,
+      "loss_plain": 1.7956336736679077,
+      "loss_delta": -1.7955702060075964,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.2578125,
+      "R": 2,
+      "core_depth": 1
+    },
+    {
+      "regime": "isoParams",
+      "grt": "grt-c1-R4",
+      "plain": "plain-3L",
+      "note": "same unique block count; the GRT applies its core R times",
+      "layer_applications_grt": 6,
+      "layer_applications_plain": 3,
+      "parameters_grt": 177344,
+      "parameters_plain": 156480,
+      "parameter_ratio_plain_over_grt": 0.8823529411764706,
+      "loss_grt": 9.05631741261459e-05,
+      "loss_plain": 1.7956336736679077,
+      "loss_delta": -1.7955431104937816,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.2578125,
+      "R": 4,
+      "core_depth": 1
+    },
+    {
+      "regime": "isoParams",
+      "grt": "grt-c1-R6",
+      "plain": "plain-3L",
+      "note": "same unique block count; the GRT applies its core R times",
+      "layer_applications_grt": 8,
+      "layer_applications_plain": 3,
+      "parameters_grt": 177344,
+      "parameters_plain": 156480,
+      "parameter_ratio_plain_over_grt": 0.8823529411764706,
+      "loss_grt": 6.172295979922637e-05,
+      "loss_plain": 1.7956336736679077,
+      "loss_delta": -1.7955719507081085,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.2578125,
+      "R": 6,
+      "core_depth": 1
+    },
+    {
+      "regime": "isoParams",
+      "grt": "grt-c2-R1",
+      "plain": "plain-4L",
+      "note": "same unique block count; the GRT applies its core R times",
+      "layer_applications_grt": 4,
+      "layer_applications_plain": 4,
+      "parameters_grt": 227328,
+      "parameters_plain": 206464,
+      "parameter_ratio_plain_over_grt": 0.9082207207207207,
+      "loss_grt": 0.00011540401510501397,
+      "loss_plain": 1.6380478590726852,
+      "loss_delta": -1.6379324550575802,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.3428955078125,
+      "R": 1,
+      "core_depth": 2
+    },
+    {
+      "regime": "isoParams",
+      "grt": "grt-c2-R2",
+      "plain": "plain-4L",
+      "note": "same unique block count; the GRT applies its core R times",
+      "layer_applications_grt": 6,
+      "layer_applications_plain": 4,
+      "parameters_grt": 227328,
+      "parameters_plain": 206464,
+      "parameter_ratio_plain_over_grt": 0.9082207207207207,
+      "loss_grt": 1.7955396175384521,
+      "loss_plain": 1.6380478590726852,
+      "loss_delta": 0.1574917584657669,
+      "accuracy_grt": 0.259521484375,
+      "accuracy_plain": 0.3428955078125,
+      "R": 2,
+      "core_depth": 2
+    },
+    {
+      "regime": "isoParams",
+      "grt": "grt-c2-R4",
+      "plain": "plain-4L",
+      "note": "same unique block count; the GRT applies its core R times",
+      "layer_applications_grt": 10,
+      "layer_applications_plain": 4,
+      "parameters_grt": 227328,
+      "parameters_plain": 206464,
+      "parameter_ratio_plain_over_grt": 0.9082207207207207,
+      "loss_grt": 1.7955149412155151,
+      "loss_plain": 1.6380478590726852,
+      "loss_delta": 0.1574670821428299,
+      "accuracy_grt": 0.2581787109375,
+      "accuracy_plain": 0.3428955078125,
+      "R": 4,
+      "core_depth": 2
+    },
+    {
+      "regime": "isoParams",
+      "grt": "grt-c2-R6",
+      "plain": "plain-4L",
+      "note": "same unique block count; the GRT applies its core R times",
+      "layer_applications_grt": 14,
+      "layer_applications_plain": 4,
+      "parameters_grt": 227328,
+      "parameters_plain": 206464,
+      "parameter_ratio_plain_over_grt": 0.9082207207207207,
+      "loss_grt": 0.00013517189154299558,
+      "loss_plain": 1.6380478590726852,
+      "loss_delta": -1.6379126871811422,
+      "accuracy_grt": 1.0,
+      "accuracy_plain": 0.3428955078125,
+      "R": 6,
+      "core_depth": 2
+    }
+  ],
+  "sweeps": {
+    "core_depths": [
+      1,
+      2
+    ],
+    "recurrences": [
+      1,
+      2,
+      4,
+      6
+    ]
+  },
+  "solve_threshold": 0.99
+}

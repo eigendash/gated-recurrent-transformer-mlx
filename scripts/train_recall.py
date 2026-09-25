@@ -77,10 +77,19 @@ def main() -> int:
     ap.add_argument("--core-depths", type=int, nargs="+", default=[1, 2])
     ap.add_argument("--recurrences", type=int, nargs="+", default=[1, 2, 4, 6])
     ap.add_argument("--eval-batches", type=int, default=16)
+    ap.add_argument("--eval-every", type=int, default=250)
+    ap.add_argument("--shift-pairs", type=int, default=12,
+                    help="evaluate on this many pairs (train used --pairs); 0 disables")
     ap.add_argument("--out", type=str, default=str(RESULTS_DIR))
     args = ap.parse_args()
 
     task = MQARConfig(n_pairs=args.pairs, n_keys=args.keys, batch_size=args.batch)
+    shift_task = (
+        MQARConfig(n_pairs=args.shift_pairs, n_keys=args.keys, batch_size=args.batch)
+        if args.shift_pairs > args.pairs
+        else None
+    )
+    max_len = max(task.seq_len, shift_task.seq_len if shift_task else 0)
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     log_path = out_dir / "isoflops_isoparams.txt"
@@ -111,11 +120,14 @@ def main() -> int:
     log(f"       depth sampling off (fixed R), one seed ({args.seed}) shared by every"
         " run so all models see the same batch stream")
     log(f"Eval:  {args.eval_batches} held-out batches, noise-free, at the full R")
+    if shift_task is not None:
+        log(f"       plus a longer held-out split with pairs={shift_task.n_pairs}"
+            f" (seq_len={shift_task.seq_len}) that no model was trained on")
     log()
 
     base_cfg = dict(
         vocab_size=task.vocab_size,
-        max_seq_len=task.seq_len,
+        max_seq_len=max_len,
         dim=args.dim,
         n_heads=args.heads,
     )
@@ -136,14 +148,31 @@ def main() -> int:
             peak_lr=args.lr,
             warmup=args.warmup,
             seed=args.seed,
-            log_every=max(250, args.steps // 8),
-            eval_every=max(250, args.steps // 4),
+            log_every=max(500, args.steps // 4),
+            eval_every=args.eval_every,
             eval_batches=max(4, args.eval_batches // 4),
             log=log,
         )
         metrics = evaluate(model, task, R=R, n_batches=args.eval_batches, seed=args.seed + 7)
+        shifted = (
+            evaluate(model, shift_task, R=R, n_batches=args.eval_batches, seed=args.seed + 8)
+            if shift_task is not None
+            else {"loss": float("nan"), "accuracy": float("nan")}
+        )
+        # First evaluation at which the model had effectively solved the task.
+        solved_at = next(
+            (e["step"] for e in history["eval"] if e["accuracy"] >= 0.99), None
+        )
         record = dict(
             tag=tag,
+            solved_at_step=solved_at,
+            applications_to_solve=(
+                None if solved_at is None else solved_at * model.layer_applications(R)
+            ),
+            eval_curve=[
+                {"step": e["step"], "loss": e["loss"], "accuracy": e["accuracy"]}
+                for e in history["eval"]
+            ],
             kind=kind,
             R=R,
             unique_blocks=model.unique_blocks,
@@ -151,6 +180,8 @@ def main() -> int:
             layer_applications=model.layer_applications(R),
             held_out_loss=metrics["loss"],
             held_out_accuracy=metrics["accuracy"],
+            shifted_loss=shifted["loss"],
+            shifted_accuracy=shifted["accuracy"],
             train_loss_final=history["train_loss"][-1],
             wall_time_s=history["wall_time_s"],
         )
@@ -158,6 +189,7 @@ def main() -> int:
         runs.append(record)
         run_by_tag[tag] = record
         log(f"    -> held-out loss {metrics['loss']:.4f}  accuracy {metrics['accuracy']:.4f}"
+            f"  | shifted loss {shifted['loss']:.4f}  accuracy {shifted['accuracy']:.4f}"
             f"  ({history['wall_time_s']:.1f}s)")
         return record
 
@@ -269,17 +301,31 @@ def main() -> int:
     log("All trained models")
     log("-----------------")
     log(f"{'run':<16}{'kind':<7}{'R':>4}{'blocks':>8}{'params':>9}{'apps':>6}"
-        f"{'measured':>10}{'loss':>9}{'acc':>8}{'sec':>7}")
+        f"{'measured':>10}{'loss':>9}{'acc':>8}{'shift L':>9}{'shift A':>9}{'sec':>7}")
     for r in runs:
         log(f"{r['tag']:<16}{r['kind']:<7}{r['R']:>4}{r['unique_blocks']:>8}"
             f"{r['parameters']:>9}{r['layer_applications']:>6}"
             f"{r.get('measured_block_applications', 0):>10}{r['held_out_loss']:>9.4f}"
-            f"{r['held_out_accuracy']:>8.4f}{r['wall_time_s']:>7.1f}")
+            f"{r['held_out_accuracy']:>8.4f}{r['shifted_loss']:>9.4f}"
+            f"{r['shifted_accuracy']:>9.4f}{r['wall_time_s']:>7.1f}")
 
     table("isoFLOPs: GRT vs a plain stack with the same number of block applications",
           isoflops_table)
     table("isoParams: GRT vs a plain stack with the same number of unique blocks",
           isoparams_table)
+
+    log()
+    log("Compute to reach the task (first eval step with held-out accuracy >= 0.99)")
+    log("----------------------------------------------------------------------------")
+    log(f"{'run':<16}{'apps/step':>10}{'solve step':>12}{'block applications':>20}")
+    for r in runs:
+        step = r["solved_at_step"]
+        log(f"{r['tag']:<16}{r['layer_applications']:>10}"
+            f"{(step if step else 'never'):>12}"
+            f"{(r['applications_to_solve'] if step else 'not reached'):>20}")
+    solved = [r for r in runs if r["solved_at_step"]]
+    log(f"{len(solved)}/{len(runs)} configurations reached 99% held-out accuracy"
+        f" within {args.steps} steps")
 
     log()
     log("Reading these numbers")
@@ -312,11 +358,17 @@ def main() -> int:
         training=dict(steps=args.steps, peak_lr=args.lr, warmup=args.warmup,
                       weight_decay=0.01, grad_clip=1.0, seed=args.seed,
                       depth_sampling=False, state_noise_std=0.1, gate_noise_std=0.1),
-        evaluation=dict(batches=args.eval_batches, noise="off"),
+        evaluation=dict(
+            batches=args.eval_batches,
+            noise="off",
+            shifted_pairs=shift_task.n_pairs if shift_task else None,
+            shifted_seq_len=shift_task.seq_len if shift_task else None,
+        ),
         runs=runs,
         isoflops=isoflops_table,
         isoparams=isoparams_table,
         sweeps=dict(core_depths=args.core_depths, recurrences=args.recurrences),
+        solve_threshold=0.99,
     )
     json_path.write_text(json.dumps(payload, indent=2) + "\n")
     log()

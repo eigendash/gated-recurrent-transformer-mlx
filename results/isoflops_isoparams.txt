@@ -1,0 +1,301 @@
+Gated Recurrent Transformers: Expressive Depth through Recurrent Modulation
+arXiv:2608.15062 -- Amr Hegazy, Amr Alanwar, Mostafa Elhoushi
+Toy-scale isoFLOPs / isoParams comparison (not a reproduction of the paper).
+
+Task: multi-query associative recall, sequence = k v pairs then the keys
+      again in a shuffled order. pairs=8 keys=16 seq_len=24 vocab=32
+      chance accuracy = 0.0312 over the whole vocabulary (0.0625 if a model emitted only values);
+      scored on the 8 query positions only
+Model: dim=64 heads=4 mlp_ratio=4, learned positions, pre-norm blocks
+Train: AdamW lr=0.003 cosine with 100-step warmup, weight_decay=0.01, grad clip 1.0, batch=64, 2000 steps, state noise sigma_x=0.1, gate noise sigma_g=0.1,
+       depth sampling off (fixed R), one seed (0) shared by every run so all models see the same batch stream
+Eval:  16 held-out batches, noise-free, at the full R
+       plus a longer held-out split with pairs=12 (seq_len=36) that no model was trained on
+
+[grt-c1-R1] grt: unique_blocks=3 params=177344 layer_applications=3
+    step     1/2000  train_loss 3.5624  (1.073s/step)
+    eval @   250  loss 1.8169  acc 0.2603
+    step   500/2000  train_loss 1.7960  (0.027s/step)
+    eval @   500  loss 1.8025  acc 0.2632
+    eval @   750  loss 0.0152  acc 0.9966
+    step  1000/2000  train_loss 0.0006  (0.027s/step)
+    eval @  1000  loss 0.0014  acc 0.9995
+    eval @  1250  loss 0.0001  acc 1.0000
+    step  1500/2000  train_loss 0.0001  (0.027s/step)
+    eval @  1500  loss 0.0001  acc 1.0000
+    eval @  1750  loss 0.0001  acc 1.0000
+    step  2000/2000  train_loss 0.0001  (0.027s/step)
+    eval @  2000  loss 0.0001  acc 1.0000
+    -> held-out loss 0.0001  accuracy 1.0000  | shifted loss 4.8933  accuracy 0.5695  (53.8s)
+[grt-c1-R2] grt: unique_blocks=3 params=177344 layer_applications=4
+    step     1/2000  train_loss 3.5629  (0.032s/step)
+    eval @   250  loss 1.8141  acc 0.2593
+    step   500/2000  train_loss 1.7961  (0.033s/step)
+    eval @   500  loss 1.8012  acc 0.2593
+    eval @   750  loss 0.2046  acc 0.9233
+    step  1000/2000  train_loss 0.0006  (0.033s/step)
+    eval @  1000  loss 0.0016  acc 0.9995
+    eval @  1250  loss 0.0001  acc 1.0000
+    step  1500/2000  train_loss 0.0001  (0.033s/step)
+    eval @  1500  loss 0.0001  acc 1.0000
+    eval @  1750  loss 0.0001  acc 1.0000
+    step  2000/2000  train_loss 0.0001  (0.033s/step)
+    eval @  2000  loss 0.0001  acc 1.0000
+    -> held-out loss 0.0001  accuracy 1.0000  | shifted loss 4.3671  accuracy 0.6194  (66.9s)
+[grt-c1-R4] grt: unique_blocks=3 params=177344 layer_applications=6
+    step     1/2000  train_loss 3.5652  (0.048s/step)
+    eval @   250  loss 1.8168  acc 0.2554
+    step   500/2000  train_loss 1.7951  (0.045s/step)
+    eval @   500  loss 1.8013  acc 0.2598
+    eval @   750  loss 1.7970  acc 0.2612
+    step  1000/2000  train_loss 0.0690  (0.045s/step)
+    eval @  1000  loss 0.0771  acc 0.9785
+    eval @  1250  loss 0.0027  acc 0.9995
+    step  1500/2000  train_loss 0.0001  (0.045s/step)
+    eval @  1500  loss 0.0001  acc 1.0000
+    eval @  1750  loss 0.0001  acc 1.0000
+    step  2000/2000  train_loss 0.0001  (0.045s/step)
+    eval @  2000  loss 0.0001  acc 1.0000
+    -> held-out loss 0.0001  accuracy 1.0000  | shifted loss 5.1574  accuracy 0.5315  (90.5s)
+[grt-c1-R6] grt: unique_blocks=3 params=177344 layer_applications=8
+    step     1/2000  train_loss 3.5687  (0.068s/step)
+    eval @   250  loss 1.8175  acc 0.2495
+    step   500/2000  train_loss 1.7953  (0.059s/step)
+    eval @   500  loss 1.8010  acc 0.2588
+    eval @   750  loss 1.7632  acc 0.2900
+    step  1000/2000  train_loss 0.0210  (0.057s/step)
+    eval @  1000  loss 0.0318  acc 0.9902
+    eval @  1250  loss 0.0005  acc 1.0000
+    step  1500/2000  train_loss 0.0001  (0.057s/step)
+    eval @  1500  loss 0.0001  acc 1.0000
+    eval @  1750  loss 0.0001  acc 1.0000
+    step  2000/2000  train_loss 0.0001  (0.056s/step)
+    eval @  2000  loss 0.0001  acc 1.0000
+    -> held-out loss 0.0001  accuracy 1.0000  | shifted loss 5.1388  accuracy 0.5539  (112.8s)
+[grt-c2-R1] grt: unique_blocks=4 params=227328 layer_applications=4
+    step     1/2000  train_loss 3.6746  (0.026s/step)
+    eval @   250  loss 1.8181  acc 0.2549
+    step   500/2000  train_loss 1.7996  (0.030s/step)
+    eval @   500  loss 1.8032  acc 0.2598
+    eval @   750  loss 1.8008  acc 0.2568
+    step  1000/2000  train_loss 1.7895  (0.028s/step)
+    eval @  1000  loss 1.7944  acc 0.2573
+    eval @  1250  loss 0.0631  acc 0.9810
+    step  1500/2000  train_loss 0.0002  (0.026s/step)
+    eval @  1500  loss 0.0002  acc 1.0000
+    eval @  1750  loss 0.0001  acc 1.0000
+    step  2000/2000  train_loss 0.0001  (0.025s/step)
+    eval @  2000  loss 0.0001  acc 1.0000
+    -> held-out loss 0.0001  accuracy 1.0000  | shifted loss 5.7772  accuracy 0.4659  (51.0s)
+[grt-c2-R2] grt: unique_blocks=4 params=227328 layer_applications=6
+    step     1/2000  train_loss 3.6744  (0.029s/step)
+    eval @   250  loss 1.8165  acc 0.2578
+    step   500/2000  train_loss 1.7960  (0.028s/step)
+    eval @   500  loss 1.8019  acc 0.2568
+    eval @   750  loss 1.8008  acc 0.2544
+    step  1000/2000  train_loss 1.7923  (0.028s/step)
+    eval @  1000  loss 1.7982  acc 0.2549
+    eval @  1250  loss 1.7955  acc 0.2578
+    step  1500/2000  train_loss 1.7842  (0.028s/step)
+    eval @  1500  loss 1.7946  acc 0.2573
+    eval @  1750  loss 1.7946  acc 0.2617
+    step  2000/2000  train_loss 1.8010  (0.029s/step)
+    eval @  2000  loss 1.7944  acc 0.2617
+    -> held-out loss 1.7955  accuracy 0.2595  | shifted loss 3.0326  accuracy 0.1938  (58.1s)
+[grt-c2-R4] grt: unique_blocks=4 params=227328 layer_applications=10
+    step     1/2000  train_loss 3.6724  (0.045s/step)
+    eval @   250  loss 1.8161  acc 0.2534
+    step   500/2000  train_loss 1.8014  (0.044s/step)
+    eval @   500  loss 1.8025  acc 0.2583
+    eval @   750  loss 1.7998  acc 0.2656
+    step  1000/2000  train_loss 1.7921  (0.048s/step)
+    eval @  1000  loss 1.7982  acc 0.2563
+    eval @  1250  loss 1.7953  acc 0.2593
+    step  1500/2000  train_loss 1.7848  (0.049s/step)
+    eval @  1500  loss 1.7946  acc 0.2563
+    eval @  1750  loss 1.7947  acc 0.2603
+    step  2000/2000  train_loss 1.8008  (0.051s/step)
+    eval @  2000  loss 1.7946  acc 0.2593
+    -> held-out loss 1.7955  accuracy 0.2582  | shifted loss 3.0434  accuracy 0.1937  (101.7s)
+[grt-c2-R6] grt: unique_blocks=4 params=227328 layer_applications=14
+    step     1/2000  train_loss 3.6691  (0.071s/step)
+    eval @   250  loss 1.8163  acc 0.2573
+    step   500/2000  train_loss 1.8002  (0.071s/step)
+    eval @   500  loss 1.8023  acc 0.2534
+    eval @   750  loss 1.7997  acc 0.2578
+    step  1000/2000  train_loss 1.7909  (0.072s/step)
+    eval @  1000  loss 1.7970  acc 0.2642
+    eval @  1250  loss 0.0191  acc 0.9956
+    step  1500/2000  train_loss 0.0002  (0.063s/step)
+    eval @  1500  loss 0.0002  acc 1.0000
+    eval @  1750  loss 0.0002  acc 1.0000
+    step  2000/2000  train_loss 0.0001  (0.053s/step)
+    eval @  2000  loss 0.0001  acc 1.0000
+    -> held-out loss 0.0001  accuracy 1.0000  | shifted loss 4.6399  accuracy 0.5688  (105.2s)
+[plain-3L] plain: unique_blocks=3 params=156480 layer_applications=3
+    step     1/2000  train_loss 3.7081  (0.006s/step)
+    eval @   250  loss 1.8143  acc 0.2520
+    step   500/2000  train_loss 1.7979  (0.007s/step)
+    eval @   500  loss 1.8019  acc 0.2495
+    eval @   750  loss 1.8004  acc 0.2539
+    step  1000/2000  train_loss 1.7918  (0.007s/step)
+    eval @  1000  loss 1.7983  acc 0.2588
+    eval @  1250  loss 1.7956  acc 0.2603
+    step  1500/2000  train_loss 1.7846  (0.007s/step)
+    eval @  1500  loss 1.7948  acc 0.2593
+    eval @  1750  loss 1.7949  acc 0.2588
+    step  2000/2000  train_loss 1.8003  (0.007s/step)
+    eval @  2000  loss 1.7950  acc 0.2583
+    -> held-out loss 1.7956  accuracy 0.2578  | shifted loss 3.1109  accuracy 0.1886  (14.2s)
+[plain-4L] plain: unique_blocks=4 params=206464 layer_applications=4
+    step     1/2000  train_loss 3.7778  (0.009s/step)
+    eval @   250  loss 1.8157  acc 0.2554
+    step   500/2000  train_loss 1.7969  (0.009s/step)
+    eval @   500  loss 1.8017  acc 0.2559
+    eval @   750  loss 1.7994  acc 0.2588
+    step  1000/2000  train_loss 1.7909  (0.009s/step)
+    eval @  1000  loss 1.7974  acc 0.2524
+    eval @  1250  loss 1.7950  acc 0.2637
+    step  1500/2000  train_loss 1.7847  (0.009s/step)
+    eval @  1500  loss 1.7943  acc 0.2632
+    eval @  1750  loss 1.7934  acc 0.2617
+    step  2000/2000  train_loss 1.6526  (0.009s/step)
+    eval @  2000  loss 1.6409  acc 0.3452
+    -> held-out loss 1.6380  accuracy 0.3429  | shifted loss 3.0671  accuracy 0.2408  (18.4s)
+[plain-6L] plain: unique_blocks=6 params=306432 layer_applications=6
+    step     1/2000  train_loss 3.7015  (0.012s/step)
+    eval @   250  loss 1.8294  acc 0.2549
+    step   500/2000  train_loss 1.8039  (0.012s/step)
+    eval @   500  loss 1.8084  acc 0.2524
+    eval @   750  loss 1.8019  acc 0.2583
+    step  1000/2000  train_loss 1.7920  (0.012s/step)
+    eval @  1000  loss 1.7990  acc 0.2568
+    eval @  1250  loss 1.7972  acc 0.2524
+    step  1500/2000  train_loss 1.7856  (0.012s/step)
+    eval @  1500  loss 1.7960  acc 0.2563
+    eval @  1750  loss 1.7955  acc 0.2603
+    step  2000/2000  train_loss 1.8023  (0.012s/step)
+    eval @  2000  loss 1.7952  acc 0.2598
+    -> held-out loss 1.7957  accuracy 0.2640  | shifted loss 3.1113  accuracy 0.1897  (24.4s)
+[plain-8L] plain: unique_blocks=8 params=406400 layer_applications=8
+    step     1/2000  train_loss 3.7078  (0.016s/step)
+    eval @   250  loss 1.8289  acc 0.2466
+    step   500/2000  train_loss 1.8037  (0.016s/step)
+    eval @   500  loss 1.8066  acc 0.2563
+    eval @   750  loss 1.8018  acc 0.2554
+    step  1000/2000  train_loss 1.7934  (0.015s/step)
+    eval @  1000  loss 1.7990  acc 0.2554
+    eval @  1250  loss 1.7970  acc 0.2598
+    step  1500/2000  train_loss 1.7858  (0.015s/step)
+    eval @  1500  loss 1.7960  acc 0.2612
+    eval @  1750  loss 1.7954  acc 0.2549
+    step  2000/2000  train_loss 1.7997  (0.015s/step)
+    eval @  2000  loss 1.7952  acc 0.2544
+    -> held-out loss 1.7960  accuracy 0.2618  | shifted loss 3.1402  accuracy 0.1882  (30.3s)
+[plain-10L] plain: unique_blocks=10 params=506368 layer_applications=10
+    step     1/2000  train_loss 3.6068  (0.019s/step)
+    eval @   250  loss 1.8262  acc 0.2476
+    step   500/2000  train_loss 1.7975  (0.018s/step)
+    eval @   500  loss 1.8038  acc 0.2598
+    eval @   750  loss 1.8013  acc 0.2573
+    step  1000/2000  train_loss 1.7938  (0.019s/step)
+    eval @  1000  loss 1.7984  acc 0.2549
+    eval @  1250  loss 1.7950  acc 0.2607
+    step  1500/2000  train_loss 1.7849  (0.019s/step)
+    eval @  1500  loss 1.7957  acc 0.2588
+    eval @  1750  loss 1.7946  acc 0.2705
+    step  2000/2000  train_loss 1.8011  (0.019s/step)
+    eval @  2000  loss 1.7948  acc 0.2676
+    -> held-out loss 1.7962  accuracy 0.2600  | shifted loss 3.1183  accuracy 0.1905  (37.8s)
+[plain-14L] plain: unique_blocks=14 params=706304 layer_applications=14
+    step     1/2000  train_loss 3.7662  (0.029s/step)
+    eval @   250  loss 1.8390  acc 0.2432
+    step   500/2000  train_loss 1.8033  (0.026s/step)
+    eval @   500  loss 1.8087  acc 0.2554
+    eval @   750  loss 1.8024  acc 0.2622
+    step  1000/2000  train_loss 1.7936  (0.026s/step)
+    eval @  1000  loss 1.8007  acc 0.2612
+    eval @  1250  loss 1.7954  acc 0.2617
+    step  1500/2000  train_loss 1.7867  (0.026s/step)
+    eval @  1500  loss 1.7953  acc 0.2627
+    eval @  1750  loss 1.7947  acc 0.2554
+    step  2000/2000  train_loss 1.8031  (0.026s/step)
+    eval @  2000  loss 1.7945  acc 0.2622
+    -> held-out loss 1.7962  accuracy 0.2614  | shifted loss 3.1015  accuracy 0.1921  (53.0s)
+
+====================================================================================================
+Summary (held-out loss and query accuracy; dLoss < 0 means the GRT is better)
+====================================================================================================
+
+All trained models
+-----------------
+run             kind      R  blocks   params  apps  measured     loss     acc  shift L  shift A    sec
+grt-c1-R1       grt       1       3   177344     3         3   0.0001  1.0000   4.8933   0.5695   53.8
+grt-c1-R2       grt       2       3   177344     4         4   0.0001  1.0000   4.3671   0.6194   66.9
+grt-c1-R4       grt       4       3   177344     6         6   0.0001  1.0000   5.1574   0.5315   90.5
+grt-c1-R6       grt       6       3   177344     8         8   0.0001  1.0000   5.1388   0.5539  112.8
+grt-c2-R1       grt       1       4   227328     4         4   0.0001  1.0000   5.7772   0.4659   51.0
+grt-c2-R2       grt       2       4   227328     6         6   1.7955  0.2595   3.0326   0.1938   58.1
+grt-c2-R4       grt       4       4   227328    10        10   1.7955  0.2582   3.0434   0.1937  101.7
+grt-c2-R6       grt       6       4   227328    14        14   0.0001  1.0000   4.6399   0.5688  105.2
+plain-3L        plain     3       3   156480     3         3   1.7956  0.2578   3.1109   0.1886   14.2
+plain-4L        plain     4       4   206464     4         4   1.6380  0.3429   3.0671   0.2408   18.4
+plain-6L        plain     6       6   306432     6         6   1.7957  0.2640   3.1113   0.1897   24.4
+plain-8L        plain     8       8   406400     8         8   1.7960  0.2618   3.1402   0.1882   30.3
+plain-10L       plain    10      10   506368    10        10   1.7962  0.2600   3.1183   0.1905   37.8
+plain-14L       plain    14      14   706304    14        14   1.7962  0.2614   3.1015   0.1921   53.0
+
+isoFLOPs: GRT vs a plain stack with the same number of block applications
+-------------------------------------------------------------------------
+GRT           plain       apps  params G  params P   P/G   loss G   loss P   dLoss   acc G   acc P
+grt-c1-R1     plain-3L       3    177344    156480  0.88   0.0001   1.7956 -1.7956  1.0000  0.2578
+grt-c1-R2     plain-4L       4    177344    206464  1.16   0.0001   1.6380 -1.6380  1.0000  0.3429
+grt-c1-R4     plain-6L       6    177344    306432  1.73   0.0001   1.7957 -1.7956  1.0000  0.2640
+grt-c1-R6     plain-8L       8    177344    406400  2.29   0.0001   1.7960 -1.7960  1.0000  0.2618
+grt-c2-R1     plain-4L       4    227328    206464  0.91   0.0001   1.6380 -1.6379  1.0000  0.3429
+grt-c2-R2     plain-6L       6    227328    306432  1.35   1.7955   1.7957 -0.0002  0.2595  0.2640
+grt-c2-R4     plain-10L     10    227328    506368  2.23   1.7955   1.7962 -0.0007  0.2582  0.2600
+grt-c2-R6     plain-14L     14    227328    706304  3.11   0.0001   1.7962 -1.7961  1.0000  0.2614
+GRT lower held-out loss in 8/8 cells (mean delta -1.3075)
+
+isoParams: GRT vs a plain stack with the same number of unique blocks
+---------------------------------------------------------------------
+GRT           plain       apps  params G  params P   P/G   loss G   loss P   dLoss   acc G   acc P
+grt-c1-R1     plain-3L       3    177344    156480  0.88   0.0001   1.7956 -1.7956  1.0000  0.2578
+grt-c1-R2     plain-3L       4    177344    156480  0.88   0.0001   1.7956 -1.7956  1.0000  0.2578
+grt-c1-R4     plain-3L       6    177344    156480  0.88   0.0001   1.7956 -1.7955  1.0000  0.2578
+grt-c1-R6     plain-3L       8    177344    156480  0.88   0.0001   1.7956 -1.7956  1.0000  0.2578
+grt-c2-R1     plain-4L       4    227328    206464  0.91   0.0001   1.6380 -1.6379  1.0000  0.3429
+grt-c2-R2     plain-4L       6    227328    206464  0.91   1.7955   1.6380 +0.1575  0.2595  0.3429
+grt-c2-R4     plain-4L      10    227328    206464  0.91   1.7955   1.6380 +0.1575  0.2582  0.3429
+grt-c2-R6     plain-4L      14    227328    206464  0.91   0.0001   1.6380 -1.6379  1.0000  0.3429
+GRT lower held-out loss in 6/8 cells (mean delta -1.2679)
+
+Compute to reach the task (first eval step with held-out accuracy >= 0.99)
+----------------------------------------------------------------------------
+run              apps/step  solve step  block applications
+grt-c1-R1                3         750                2250
+grt-c1-R2                4        1000                4000
+grt-c1-R4                6        1250                7500
+grt-c1-R6                8        1000                8000
+grt-c2-R1                4        1500                6000
+grt-c2-R2                6       never         not reached
+grt-c2-R4               10       never         not reached
+grt-c2-R6               14        1250               17500
+plain-3L                 3       never         not reached
+plain-4L                 4       never         not reached
+plain-6L                 6       never         not reached
+plain-8L                 8       never         not reached
+plain-10L               10       never         not reached
+plain-14L               14       never         not reached
+6/14 configurations reached 99% held-out accuracy within 2000 steps
+
+Reading these numbers
+---------------------
+Every number above comes from this script's own run. This is a toy scale: dim=64,
+24-token sequences, 2000 steps, one seed. The paper's comparisons are
+GPT-2 Small/Medium/Large scale (124M-774M parameters, ~9.8B training tokens)
+and nothing here is comparable to them.
+
+wrote /Users/dash/Documents/dev/ai_papers/gated-recurrent-transformer-mlx/results/isoflops_isoparams.json
+wrote /Users/dash/Documents/dev/ai_papers/gated-recurrent-transformer-mlx/results/isoflops_isoparams.txt
