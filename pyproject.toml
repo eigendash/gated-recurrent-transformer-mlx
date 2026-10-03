@@ -10,3 +10,6 @@ dev = ["pytest"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# The package is not pip-installed in the checkout, so put the repo root on
+# sys.path; this makes both `pytest` and `python -m pytest` work.
+pythonpath = ["."]
